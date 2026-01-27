@@ -1,0 +1,25 @@
+
+FRAUD DETECTION POLICY
+
+1. TRANSACTION MONITORING
+- Monitor all transactions for unusual patterns
+- Flag transactions with abnormal amounts
+- Detect location anomalies and velocity changes
+
+2. RISK FACTORS
+- High-value transactions (>$500)
+- Multiple transactions in short time periods
+- Unusual location or country changes
+- Abnormal merchant categories
+- New device or IP address usage
+
+3. THRESHOLDS
+- Standard risk: 0.3-0.5
+- High risk: 0.5-0.7
+- Critical risk: >0.7
+
+4. COMPLIANCE
+- All flagged transactions must be reviewed within 24 hours
+- Maintain audit trail for all decisions
+- Report suspicious activities to relevant authorities
+            
