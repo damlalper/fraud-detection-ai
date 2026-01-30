@@ -1,0 +1,171 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Fraud Detection Dashboard",
+    "tags": ["fraud", "ml", "monitoring"],
+    "timezone": "browser",
+    "schemaVersion": 30,
+    "version": 1,
+    "refresh": "10s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Total Predictions",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
+        "targets": [
+          {
+            "expr": "fraud_detection_predictions_total",
+            "legendFormat": "Total"
+          }
+        ],
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area"
+        }
+      },
+      {
+        "id": 2,
+        "title": "Fraud Detected",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0},
+        "targets": [
+          {
+            "expr": "fraud_detection_fraud_count",
+            "legendFormat": "Fraud"
+          }
+        ],
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "yellow", "value": 10},
+                {"color": "red", "value": 50}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "Fraud Rate",
+        "type": "gauge",
+        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0},
+        "targets": [
+          {
+            "expr": "fraud_detection_fraud_rate",
+            "legendFormat": "Rate"
+          }
+        ],
+        "options": {
+          "showThresholdLabels": true
+        },
+        "fieldConfig": {
+          "defaults": {
+            "max": 1,
+            "min": 0,
+            "unit": "percentunit",
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "yellow", "value": 0.05},
+                {"color": "red", "value": 0.1}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 4,
+        "title": "Response Time (ms)",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0},
+        "targets": [
+          {
+            "expr": "fraud_detection_response_time_avg",
+            "legendFormat": "Avg"
+          }
+        ],
+        "options": {
+          "colorMode": "value"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ms",
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "yellow", "value": 100},
+                {"color": "red", "value": 300}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "Predictions Over Time",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
+        "targets": [
+          {
+            "expr": "rate(fraud_detection_predictions_total[5m])",
+            "legendFormat": "Predictions/sec"
+          }
+        ],
+        "options": {
+          "legend": {"displayMode": "list"}
+        }
+      },
+      {
+        "id": 6,
+        "title": "Fraud vs Legitimate",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
+        "targets": [
+          {
+            "expr": "fraud_detection_fraud_count",
+            "legendFormat": "Fraud"
+          },
+          {
+            "expr": "fraud_detection_legitimate_count",
+            "legendFormat": "Legitimate"
+          }
+        ],
+        "options": {
+          "legend": {"displayMode": "list"}
+        }
+      },
+      {
+        "id": 7,
+        "title": "Response Time Distribution",
+        "type": "histogram",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12},
+        "targets": [
+          {
+            "expr": "fraud_detection_response_time_bucket",
+            "legendFormat": "{{le}}"
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Model Performance",
+        "type": "table",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12},
+        "targets": [
+          {
+            "expr": "fraud_detection_model_metrics",
+            "legendFormat": "{{metric}}"
+          }
+        ]
+      }
+    ]
+  }
+}
