@@ -102,3 +102,10 @@ secrets/
 *.key
 *.cert
 credentials.json
+
+# Demo and test files
+demo.html
+demo_fraud_results.json
+test_*.py
+test_*.json
+fraud_test.json
