@@ -5,26 +5,30 @@
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-orange)](https://pytorch.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A scalable FinTech fraud detection platform that identifies suspicious financial transactions in real-time and explains decisions using Large Language Models (LLMs).
+A scalable FinTech fraud detection platform that identifies suspicious financial transactions in real-time and explains decisions using Large Language Models (LLMs). Trained on real Kaggle Credit Card Fraud dataset with **97.13% AUC-ROC** accuracy.
 
 ## 🎯 Features
 
-- **ML-based Fraud Detection**: Accurate risk scoring using XGBoost, LightGBM, and PyTorch neural networks
-- **LLM-based Explanation Engine**: Human-readable decision reasons powered by advanced language models
-- **RAG Policy Reference**: Compliance-aligned explanations using vector database retrieval
-- **Real-time API**: Production-ready FastAPI integration with <300ms latency
-- **Monitoring Dashboard**: Performance tracking, drift detection, and alert management
-- **Explainable AI**: SHAP-based feature attribution for regulatory compliance
+- **ML-based Fraud Detection**: XGBoost model with **97.13% AUC-ROC** on Kaggle dataset (284K+ transactions)
+- **LLM-based Explanation Engine**: Turkish language explanations using Mistral-7B via Hugging Face
+- **RAG Policy Reference**: TF-IDF based retrieval for fraud policy context (no onnxruntime dependency)
+- **Real-time API**: Production-ready FastAPI integration with ~200ms latency
+- **MLOps Infrastructure**: MLflow experiment tracking, model registry, and drift detection
+- **Explainable AI**: SHAP TreeExplainer for regulatory compliance
+- **Modern Frontend**: Next.js 14 + Tailwind CSS with real-time fraud detection demo
+- **AWS Deployment**: CloudFormation templates for ECS Fargate deployment
+- **Security Compliance**: GDPR, KVKK, PCI-DSS documentation
 
 ## 📊 Performance Metrics
 
-| Metric | Target | Status |
-|--------|--------|--------|
-| ROC-AUC | > 0.85 | 🚧 In Progress |
-| Precision | > 0.80 | 🚧 In Progress |
-| Recall | > 0.75 | 🚧 In Progress |
-| Inference Latency | < 300ms | 🚧 In Progress |
-| Throughput | 500+ TPS | 🚧 In Progress |
+| Metric | Target | Achieved | Status |
+|--------|--------|----------|--------|
+| ROC-AUC | > 0.85 | **0.9713** | ✅ |
+| Dataset Size | - | 284,807 txns | ✅ |
+| Fraud Cases | - | 492 cases | ✅ |
+| Threshold | - | 0.9969 | ✅ |
+| Inference Latency | < 300ms | ~200ms | ✅ |
+| Model Type | - | XGBoost | ✅ |
 
 ## 🏗️ Architecture
 
@@ -87,8 +91,8 @@ fintech-ai-freud/
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/fintech-ai-freud.git
-cd fintech-ai-freud
+git clone https://github.com/damlalper/fraud-detection-ai.git
+cd fraud-detection-ai
 ```
 
 2. **Set up Python environment**
@@ -211,9 +215,43 @@ Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for de
 
 This project is licensed under the MIT License - see [LICENSE](LICENSE) file for details.
 
-## 👥 Team
+## 👥 AI Engineer Position - Technical Skills Showcase
 
-Built as a demonstration project for ParamTECH AI Engineering role.
+This project demonstrates expertise in all required areas:
+
+### ✅ Qualifications Match
+- **Machine Learning & Deep Learning**: XGBoost (97.1% AUC), PyTorch models
+- **Large Language Models**: Mistral-7B via Hugging Face Inference API
+- **RAG Architecture**: TF-IDF based retrieval system for fraud policies
+- **Python Proficiency**: Full-stack Python application with FastAPI
+- **AI Frameworks**: TensorFlow, PyTorch, scikit-learn
+- **MLOps Experience**: MLflow tracking, model registry, drift detection
+- **APIs & Integration**: RESTful FastAPI with Swagger documentation
+- **Problem Solving**: End-to-end fraud detection pipeline
+
+### ✅ Job Responsibilities Covered
+- **AI/ML Solution Design**: Complete fraud detection architecture
+- **LLM Applications**: Turkish language chatbot/explanation system
+- **Model Lifecycle**: Training, testing, deployment, monitoring
+- **Scalable Architecture**: Docker, AWS CloudFormation deployment
+- **Data Engineering Integration**: ETL pipelines, feature engineering
+- **Cloud Deployment**: AWS ECS Fargate ready
+- **Performance Optimization**: Model tuning, API optimization
+- **Security & Compliance**: GDPR, KVKK, PCI-DSS documentation
+
+### 📊 Technical Stack Alignment
+| Required | Implemented |
+|----------|------------|
+| Machine Learning | XGBoost, scikit-learn ✅ |
+| NLP | SHAP explanations, LLM integration ✅ |
+| Deep Learning | PyTorch models ✅ |
+| LLMs | Mistral-7B (Hugging Face) ✅ |
+| RAG | TF-IDF retrieval system ✅ |
+| Python | FastAPI, Pydantic, async/await ✅ |
+| Frameworks | TensorFlow, PyTorch ✅ |
+| MLOps | MLflow, model registry ✅ |
+| APIs | RESTful FastAPI with docs ✅ |
+| Cloud | AWS CloudFormation ✅ |
 
 ## 📞 Contact
 

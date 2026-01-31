@@ -51,7 +51,7 @@ async def lifespan(app: FastAPI):
         pipeline = FraudExplanationPipeline(
             model_path=str(model_path),
             model_type="xgboost",
-            use_llm=settings.enable_rag,  # Use LLM if RAG enabled
+            use_llm=True,  # Enable LLM explanations
             use_rag=settings.enable_rag,
             llm_provider=settings.llm_provider
         )
@@ -252,7 +252,7 @@ async def explain_fraud(
         # Generate full explanation
         explanation = pipeline.explain_transaction(
             X,
-            include_llm=include_llm and settings.enable_rag,
+            include_llm=include_llm,
             include_rag=include_rag and settings.enable_rag
         )
 
@@ -386,6 +386,99 @@ async def batch_predict(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Batch prediction failed: {str(e)}"
+        )
+
+
+@app.get("/demo/realdata", tags=["Demo"])
+async def demo_real_data(
+    limit: int = 10,
+    fraud_only: bool = True,
+    pipeline: FraudExplanationPipeline = Depends(get_pipeline)
+):
+    """
+    Get real Kaggle fraud transactions for demo
+
+    - **limit**: Number of transactions to return (default: 10)
+    - **fraud_only**: Only return fraud transactions (default: True)
+    """
+    try:
+        project_root = Path(__file__).parent.parent.parent
+        data_path = project_root / "data" / "raw" / "creditcard.csv"
+
+        if not data_path.exists():
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Kaggle dataset not found"
+            )
+
+        # Load Kaggle data
+        df = pd.read_csv(data_path)
+
+        # Filter for fraud if requested
+        if fraud_only:
+            df = df[df['Class'] == 1]
+
+        # Sample transactions
+        sample_df = df.head(limit)
+
+        results = []
+        for idx, row in sample_df.iterrows():
+            # Extract features (exclude Class label)
+            features = row.drop('Class').to_dict()
+
+            # Get prediction from model
+            X = pd.DataFrame([features])
+
+            # Handle missing features
+            missing_features = set(pipeline.feature_names) - set(X.columns)
+            if missing_features:
+                for feature in missing_features:
+                    X[feature] = 0.0
+
+            X = X[pipeline.feature_names]
+
+            # Predict
+            if pipeline.model_type == "xgboost":
+                fraud_prob = pipeline.model.predict_proba(X)[0, 1]
+            else:
+                fraud_prob = pipeline.model.predict_proba(X)[0]
+
+            is_fraud = fraud_prob >= pipeline.threshold
+
+            results.append({
+                "index": int(idx),
+                "actual_label": "FRAUD" if row['Class'] == 1 else "LEGITIMATE",
+                "predicted_label": "FRAUD" if is_fraud else "LEGITIMATE",
+                "fraud_probability": float(fraud_prob),
+                "is_correct": (row['Class'] == 1) == is_fraud,
+                "amount": float(row['Amount']),
+                "time": float(row['Time']),
+                "features": {k: float(v) for k, v in features.items()}
+            })
+
+        total_transactions = len(df)
+        fraud_count = df['Class'].sum()
+
+        return {
+            "dataset": "Kaggle Credit Card Fraud",
+            "total_transactions": int(total_transactions),
+            "total_fraud": int(fraud_count),
+            "total_legitimate": int(total_transactions - fraud_count),
+            "results": results,
+            "model_info": {
+                "type": pipeline.model_type,
+                "threshold": float(pipeline.threshold),
+                "num_features": len(pipeline.feature_names)
+            }
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Demo real data error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to load demo data: {str(e)}"
         )
 
 

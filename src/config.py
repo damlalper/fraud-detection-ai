@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     # LLM Configuration
     openai_api_key: Optional[str] = Field(default=None, validation_alias="OPENAI_API_KEY")
     anthropic_api_key: Optional[str] = Field(default=None, validation_alias="ANTHROPIC_API_KEY")
-    llm_provider: str = Field(default="openai", validation_alias="LLM_PROVIDER")
+    llm_provider: str = Field(default="huggingface", validation_alias="LLM_PROVIDER")
     llm_model: str = Field(default="gpt-4", validation_alias="LLM_MODEL")
     llm_temperature: float = Field(default=0.3, validation_alias="LLM_TEMPERATURE")
     llm_max_tokens: int = Field(default=500, validation_alias="LLM_MAX_TOKENS")

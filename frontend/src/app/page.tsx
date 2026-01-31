@@ -7,6 +7,7 @@ import PredictionResult from '@/components/PredictionResult';
 import RiskFactors from '@/components/RiskFactors';
 import LLMExplanation from '@/components/LLMExplanation';
 import StatsCards from '@/components/StatsCards';
+import RealDataDemo from '@/components/RealDataDemo';
 import {
   checkHealth,
   explainFraud,
@@ -57,7 +58,7 @@ export default function Home() {
     const startTime = Date.now();
 
     try {
-      const result = await explainFraud(transaction, false, false);
+      const result = await explainFraud(transaction, true, true);
       const latency = Date.now() - startTime;
 
       // Update state
@@ -102,6 +103,11 @@ export default function Home() {
           <StatsCards stats={stats} />
         </div>
 
+        {/* Real Kaggle Data Demo */}
+        <div className="mb-6">
+          <RealDataDemo />
+        </div>
+
         {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - Form */}
@@ -120,13 +126,15 @@ export default function Home() {
             <LLMExplanation
               explanation={llmExplanation}
               policyContext={policyContext}
+              fraudProbability={prediction?.fraud_probability}
+              isFraud={prediction?.is_fraud}
             />
           </div>
         </div>
 
         {/* Footer */}
         <footer className="mt-12 text-center text-sm text-gray-400">
-          <p>AI-Powered Fraud Detection System | ParamTECH</p>
+          <p>AI-Powered Fraud Detection System</p>
           <p>Built with FastAPI, XGBoost, PyTorch, SHAP, and Hugging Face</p>
         </footer>
       </main>

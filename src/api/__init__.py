@@ -1,2 +1,2 @@
 """FastAPI backend service"""
-from api.models import *
+from src.api.models import *

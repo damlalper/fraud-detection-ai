@@ -140,43 +140,44 @@ class FraudLLMExplainer:
 
         risk_factors_text = '\n'.join(risk_factors)
 
-        # Build prompt
-        prompt = f"""You are a fraud detection AI analyst. Analyze this transaction and explain why it was flagged.
+        # Build prompt - Turkish friendly and user-focused
+        prompt = f"""Sen bir yapay zeka fraud analisti olarak müşterilere işlemlerini açıklıyorsun.
+Aşağıdaki kredi kartı işlemini analiz et ve neden {"dolandırıcılık olarak işaretlendiğini" if is_fraud else "güvenli bulunduğunu"} SADE VE ANLAŞILIR bir dille açıkla.
 
-TRANSACTION ANALYSIS:
-Fraud Score: {score:.3f} (0=legitimate, 1=fraud)
-Classification: {"FRAUDULENT" if is_fraud else "LEGITIMATE"}
+İŞLEM ANALİZİ:
+Fraud Skoru: {score:.3f} (0=güvenli, 1=riskli)
+Sonuç: {"⚠️ RİSKLİ İŞLEM" if is_fraud else "✓ GÜVENLİ İŞLEM"}
 
-TOP RISK FACTORS:
+ÖNEMLİ FAKTÖRLER:
 {risk_factors_text}
 
-TASK:
-Explain in 2-3 sentences why this transaction was flagged as {"fraudulent" if is_fraud else "legitimate"}.
-Focus on the most important risk factors and their business implications.
-Be specific about the feature values and their significance.
-Use professional but clear language suitable for fraud analysts.
+GÖREV:
+Bu işlemi müşteriye açıkla. 2-3 cümle kullan. Teknik terimler yerine günlük dil kullan.
+Örnek: "V14 değeri" demek yerine "işlem karakteristikleri", "anomali skorları" gibi ifadeler kullan.
+Müşterinin endişelenmesine veya rahatlamasına yardımcı ol.
+Eğer riskli ise ne yapması gerektiğini söyle. Güvenli ise neden güvenli olduğunu net açıkla.
 """
 
         # Add RAG context if available
         if rag_context:
             prompt += f"""
 
-FRAUD DETECTION POLICY REFERENCE:
+ŞİRKET POLİTİKALARI (sadece referans için, müşteriye direkt bahsetme):
 {rag_context}
 
-Consider these policies in your explanation.
+
 """
 
         # Add transaction data if available
         if transaction_data:
+            amount = transaction_data.get('Amount', 0)
             prompt += f"""
 
-TRANSACTION DETAILS:
-Amount: ${transaction_data.get('Amount', 'N/A')}
-Time: {transaction_data.get('Time', 'N/A')} seconds from start
+İŞLEM DETAYLARI:
+Tutar: ${amount:.2f}
 """
 
-        prompt += "\n\nEXPLANATION:"
+        prompt += "\n\nMÜŞTERİYE AÇIKLAMA (Türkçe, sade dil):"
 
         return prompt
 
@@ -244,25 +245,31 @@ Time: {transaction_data.get('Time', 'N/A')} seconds from start
         return response.content[0].text.strip()
 
     def _fallback_explanation(self, shap_explanation: Dict) -> str:
-        """Fallback template-based explanation if LLM fails"""
+        """Fallback template-based explanation if LLM fails - User friendly Turkish"""
 
         score = shap_explanation['prediction_score']
         is_fraud = score >= 0.5
         top_features = shap_explanation['top_features'][:3]
 
-        explanation = f"This transaction was classified as {'FRAUDULENT' if is_fraud else 'LEGITIMATE'} "
-        explanation += f"with a fraud score of {score:.3f}. "
+        if is_fraud:
+            explanation = f"⚠️ Bu işlem riskli olarak değerlendirildi (risk skoru: {score:.0%}). "
+            explanation += "Sistemimiz bu işlemde şüpheli aktivite tespit etti. "
 
-        explanation += "Key factors: "
+            # Add actionable advice
+            if score > 0.8:
+                explanation += "İşleminizi onaylamadan önce lütfen bizimle iletişime geçin. "
+            elif score > 0.6:
+                explanation += "Eğer bu işlemi siz yapmadıysanız, kartınızı bloke etmenizi öneririz. "
+            else:
+                explanation += "İşleminiz inceleme altında, sonuç SMS ile bildirilecektir. "
+        else:
+            explanation = f"✓ Bu işlem güvenli bulundu (güvenlik skoru: {(1-score):.0%}). "
+            explanation += "Sistemimiz işleminizde herhangi bir anormallik tespit etmedi. "
 
-        factors = []
-        for feature in top_features:
-            direction = "increased" if feature['shap_value'] > 0 else "decreased"
-            factors.append(
-                f"{feature['feature']} ({feature['value']:.2f}) {direction} the fraud risk"
-            )
-
-        explanation += ", ".join(factors) + "."
+            # Explain why it's safe
+            top_safe_factor = top_features[0] if top_features and top_features[0]['shap_value'] < 0 else None
+            if top_safe_factor:
+                explanation += f"İşlem karakteristikleri normal kullanım paternlerinize uygun. "
 
         return explanation
 
