@@ -2,7 +2,6 @@
   "model_type": "xgboost",
   "feature_names": [
     "Time",
-    "Amount",
     "V1",
     "V2",
     "V3",
@@ -31,6 +30,7 @@
     "V26",
     "V27",
     "V28",
+    "Amount",
     "Time_hours",
     "Time_hour_of_day",
     "Time_period_numeric",
@@ -46,7 +46,9 @@
     "V_range"
   ],
   "num_features": 43,
-  "best_threshold": 0.0789225772023201,
-  "auc_roc": 0.5421914859693878,
-  "training_samples": 6400
+  "best_threshold": 0.9969009160995483,
+  "auc_roc": 0.9713394220941051,
+  "training_samples": 227845,
+  "fraud_samples": 394,
+  "dataset": "Kaggle Credit Card Fraud"
 }
